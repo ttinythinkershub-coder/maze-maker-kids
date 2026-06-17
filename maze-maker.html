@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧩 Maze Maker for Kids</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple: #7C6FF7;
+    --purple-dark: #5a54c4;
+    --purple-light: #ede9ff;
+    --teal: #1db88a;
+    --teal-light: #d4f5eb;
+    --coral: #f05a28;
+    --coral-light: #fde8df;
+    --amber: #f5a623;
+    --amber-light: #fef3dc;
+    --pink: #e8448a;
+    --pink-light: #fde5f2;
+    --bg: #f4f2ff;
+    --card: #ffffff;
+    --text: #1e1b4b;
+    --text-muted: #6b6998;
+    --border: #e2deff;
+    --shadow: 0 2px 12px rgba(124,111,247,0.10);
+    --radius: 14px;
+    --radius-sm: 8px;
+    --radius-lg: 20px;
+    --transition: 0.18s ease;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--card);
+    border-bottom: 2px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.5rem;
+    color: var(--purple);
+    text-decoration: none;
+  }
+  .logo-emoji { font-size: 1.8rem; }
+  .header-tagline { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.03em; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .btn-header {
+    background: var(--purple-light);
+    color: var(--purple-dark);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-header:hover { background: var(--purple); color: white; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #7c6ff7 0%, #5a54c4 50%, #3730a3 100%);
+    color: white;
+    text-align: center;
+    padding: 3rem 2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .hero h1 { font-family: 'Fredoka One', cursive; font-size: clamp(2rem, 5vw, 3.2rem); margin-bottom: 0.5rem; position: relative; }
+  .hero p { font-size: 1.05rem; opacity: 0.88; max-width: 480px; margin: 0 auto; font-weight: 600; position: relative; }
+  .hero-badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 1.2rem; position: relative; }
+  .hero-badge { background: rgba(255,255,255,0.18); border: 1.5px solid rgba(255,255,255,0.3); color: white; border-radius: 999px; padding: 5px 14px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.02em; }
+
+  /* MAIN */
+  main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 3rem; display: grid; grid-template-columns: 290px 1fr; gap: 1.5rem; align-items: start; }
+
+  /* SIDEBAR */
+  .sidebar { display: flex; flex-direction: column; gap: 1rem; }
+  .card { background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.2rem; box-shadow: var(--shadow); }
+  .section-title { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.7rem; display: flex; align-items: center; gap: 6px; }
+  .section-title::before { content: ''; display: inline-block; width: 3px; height: 12px; background: var(--purple); border-radius: 2px; }
+
+  /* Theme grid */
+  .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .theme-btn { border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 8px 6px 6px; font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: var(--card); color: var(--text); display: flex; flex-direction: column; align-items: center; gap: 3px; transition: var(--transition); }
+  .theme-btn .t-emoji { font-size: 1.3rem; line-height: 1; }
+  .theme-btn:hover { border-color: var(--purple); background: var(--purple-light); }
+  .theme-btn.active { border-color: var(--purple); background: var(--purple-light); color: var(--purple-dark); box-shadow: 0 0 0 2px rgba(124,111,247,0.2); }
+
+  /* Shape */
+  .shape-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .shape-btn { border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 8px 4px; font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: var(--card); color: var(--text); display: flex; flex-direction: column; align-items: center; gap: 4px; transition: var(--transition); }
+  .shape-btn .s-icon { width: 24px; height: 20px; border: 2px solid currentColor; border-radius: 2px; opacity: 0.7; }
+  .shape-btn .s-icon.wide { width: 32px; height: 16px; }
+  .shape-btn .s-icon.tall { width: 16px; height: 26px; }
+  .shape-btn:hover { border-color: var(--teal); background: var(--teal-light); }
+  .shape-btn.active { border-color: var(--teal); background: var(--teal-light); color: #0a6647; box-shadow: 0 0 0 2px rgba(29,184,138,0.2); }
+
+  /* Slider */
+  .slider-row { display: flex; align-items: center; gap: 10px; }
+  .slider-row label { font-size: 0.85rem; font-weight: 600; color: var(--text); flex: 1; }
+  .slider-row .val { font-size: 0.85rem; font-weight: 800; color: var(--purple); min-width: 24px; text-align: right; }
+  input[type=range] { flex: 1; -webkit-appearance: none; height: 4px; background: var(--border); border-radius: 2px; outline: none; cursor: pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--purple); border-radius: 50%; border: 2px solid white; box-shadow: 0 1px 6px rgba(124,111,247,0.4); transition: var(--transition); }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+  /* Diff dots */
+  .diff-dots { display: flex; gap: 4px; margin-top: 4px; align-items: center; }
+  .diff-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: var(--transition); }
+  .diff-dot.on { background: var(--purple); }
+  .diff-label { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); margin-left: 4px; }
+
+  /* Bulk count — number input + stepper */
+  .bulk-row { display: flex; align-items: center; gap: 8px; }
+  .bulk-stepper {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    flex: 1;
+  }
+  .bulk-stepper button {
+    width: 36px; height: 36px;
+    border: none;
+    background: var(--purple-light);
+    color: var(--purple-dark);
+    font-size: 1.2rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: var(--transition);
+    flex-shrink: 0;
+  }
+  .bulk-stepper button:hover { background: var(--purple); color: white; }
+  .bulk-stepper input[type=number] {
+    flex: 1;
+    height: 36px;
+    border: none;
+    outline: none;
+    text-align: center;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text);
+    background: white;
+    -moz-appearance: textfield;
+  }
+  .bulk-stepper input[type=number]::-webkit-inner-spin-button,
+  .bulk-stepper input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .bulk-presets { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+  .bulk-preset {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 4px 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: var(--card);
+    color: var(--text);
+    transition: var(--transition);
+  }
+  .bulk-preset:hover { border-color: var(--coral); background: var(--coral-light); }
+  .bulk-hint { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-top: 5px; }
+
+  /* Toggles */
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 3px 0; }
+  .toggle-row span { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+  .switch { position: relative; display: inline-block; width: 36px; height: 20px; flex-shrink: 0; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .knob { position: absolute; inset: 0; background: var(--border); border-radius: 10px; cursor: pointer; transition: var(--transition); }
+  .knob::before { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: var(--transition); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+  input:checked + .knob { background: var(--purple); }
+  input:checked + .knob::before { transform: translateX(16px); }
+
+  /* Buttons */
+  .btn-generate { width: 100%; padding: 12px; border: none; border-radius: var(--radius); background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); color: white; font-family: 'Nunito', sans-serif; font-size: 0.95rem; font-weight: 800; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px; letter-spacing: 0.01em; box-shadow: 0 3px 12px rgba(124,111,247,0.35); }
+  .btn-generate:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,111,247,0.45); }
+  .btn-generate:active { transform: scale(0.98); }
+
+  .btn-print { width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--text); font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 7px; }
+  .btn-print:hover { border-color: var(--text-muted); background: #f9f8ff; }
+
+  .btn-print-all { width: 100%; padding: 10px; border: 1.5px solid var(--coral); border-radius: var(--radius); background: var(--coral-light); color: #8b2000; font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 7px; }
+  .btn-print-all:hover { background: var(--coral); color: white; }
+
+  .btn-pdf { width: 100%; padding: 10px; border: 1.5px solid #1db88a; border-radius: var(--radius); background: var(--teal-light); color: #0a6647; font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 7px; }
+  .btn-pdf:hover { background: #1db88a; color: white; }
+  .btn-pdf:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  .btn-pdf-all { width: 100%; padding: 10px; border: 1.5px solid #5a54c4; border-radius: var(--radius); background: var(--purple-light); color: var(--purple-dark); font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 7px; }
+  .btn-pdf-all:hover { background: var(--purple); color: white; }
+  .btn-pdf-all:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  .pdf-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .actions-divider { height: 1px; background: var(--border); margin: 2px 0; }
+  .actions-group-label { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted); text-align: center; }
+
+  /* VIEWER */
+  .viewer-card { background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+  .viewer-top { width: 100%; display: flex; align-items: center; justify-content: space-between; }
+  .viewer-title { font-family: 'Fredoka One', cursive; font-size: 1.2rem; color: var(--purple); display: flex; align-items: center; gap: 8px; }
+  .viewer-actions { display: flex; gap: 8px; }
+  .icon-btn { width: 36px; height: 36px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--card); color: var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); font-size: 1rem; }
+  .icon-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
+
+  /* Nav */
+  .maze-nav { display: flex; align-items: center; gap: 10px; width: 100%; justify-content: center; }
+  .nav-btn { border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 6px 16px; font-family: 'Nunito', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; background: var(--card); color: var(--text); transition: var(--transition); display: flex; align-items: center; gap: 5px; }
+  .nav-btn:hover:not(:disabled) { border-color: var(--purple); background: var(--purple-light); color: var(--purple-dark); }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .page-pill { background: var(--purple-light); color: var(--purple-dark); border-radius: 999px; padding: 5px 18px; font-size: 0.85rem; font-weight: 800; min-width: 80px; text-align: center; }
+
+  canvas { border-radius: 10px; display: block; max-width: 100%; }
+
+  /* Thumbs */
+  .thumb-strip { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; width: 100%; max-height: 160px; overflow-y: auto; padding: 4px; }
+  .thumb-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
+  .thumb-canvas { border: 2px solid var(--border); border-radius: 6px; transition: var(--transition); display: block; }
+  .thumb-wrap:hover .thumb-canvas { border-color: var(--purple); }
+  .thumb-wrap.active-thumb .thumb-canvas { border-color: var(--purple); box-shadow: 0 0 0 2px rgba(124,111,247,0.3); }
+  .thumb-label { font-size: 10px; font-weight: 700; color: var(--text-muted); }
+
+  /* Badges */
+  .badge-row { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; }
+  .badge { font-size: 0.75rem; font-weight: 700; padding: 4px 11px; border-radius: 999px; border: 1.5px solid var(--border); background: #f9f8ff; color: var(--text-muted); }
+  .badge.theme-badge { background: var(--purple-light); color: var(--purple-dark); border-color: #c4baff; }
+  .badge.diff-badge-easy { background: var(--teal-light); color: #0a6647; border-color: #9fe1cb; }
+  .badge.diff-badge-medium { background: var(--amber-light); color: #7a4e00; border-color: #fac775; }
+  .badge.diff-badge-hard { background: var(--coral-light); color: #8b2000; border-color: #f0997b; }
+  .badge.mixed-badge { background: var(--pink-light); color: #7a1040; border-color: #f4c0d1; }
+
+  .divider { height: 1px; background: var(--border); margin: 2px 0; }
+
+  /* Progress overlay */
+  #progressOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(30,27,75,0.55);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+  #progressOverlay.show { display: flex; }
+  .progress-box {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 2rem 2.5rem;
+    text-align: center;
+    box-shadow: 0 8px 40px rgba(124,111,247,0.25);
+    min-width: 280px;
+  }
+  .progress-title { font-family: 'Fredoka One', cursive; font-size: 1.4rem; color: var(--purple); margin-bottom: 10px; }
+  .progress-bar-wrap { background: var(--border); border-radius: 999px; height: 10px; overflow: hidden; margin: 10px 0 8px; }
+  .progress-bar { height: 100%; background: linear-gradient(90deg, var(--purple), var(--teal)); border-radius: 999px; transition: width 0.15s ease; }
+  .progress-text { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); }
+
+  /* FOOTER */
+  footer { background: white; border-top: 1.5px solid var(--border); padding: 1.5rem 2rem; text-align: center; color: var(--text-muted); font-size: 0.82rem; font-weight: 600; }
+  footer .footer-emojis { font-size: 1.2rem; margin-bottom: 4px; letter-spacing: 4px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    main { grid-template-columns: 1fr; padding: 1rem; gap: 1rem; }
+    .hero { padding: 2rem 1rem 1.5rem; }
+    .hero h1 { font-size: 1.8rem; }
+    header { padding: 0 1rem; }
+    .header-tagline { display: none; }
+  }
+
+  /* PRINT */
+  @media print {
+    header, footer, .sidebar, .viewer-top, .maze-nav, .thumb-strip, .badge-row, .hero, #progressOverlay { display: none !important; }
+    main { display: block; padding: 0; }
+    .viewer-card { border: none; box-shadow: none; padding: 0; }
+    canvas { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Overlay -->
+<div id="progressOverlay">
+  <div class="progress-box">
+    <div class="progress-title" id="progressTitle">✨ Generating Mazes…</div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+    <div class="progress-text" id="progressText">Starting…</div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <a class="logo" href="#">
+    <span class="logo-emoji">🧩</span>
+    <div>
+      <div>Maze Maker</div>
+      <div class="header-tagline">for kids</div>
+    </div>
+  </a>
+  <div class="header-right">
+    <button class="btn-header" onclick="generateAll()">✨ New Mazes</button>
+    <button class="btn-header" onclick="printCurrent()">🖨️ Print</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>🧩 Maze Maker for Kids</h1>
+  <p>Generate unique printable mazes in seconds — one page or a whole activity packet!</p>
+  <div class="hero-badges">
+    <span class="hero-badge">6 Themes</span>
+    <span class="hero-badge">3 Shapes</span>
+    <span class="hero-badge">Up to 50 Mazes</span>
+    <span class="hero-badge">Mixed Difficulty</span>
+    <span class="hero-badge">100% Free</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- Theme -->
+    <div class="card">
+      <div class="section-title">Theme</div>
+      <div class="theme-grid" id="themeGrid">
+        <button class="theme-btn active" data-theme="classic" onclick="setTheme('classic',this)"><span class="t-emoji">⬛</span>Classic</button>
+        <button class="theme-btn" data-theme="forest" onclick="setTheme('forest',this)"><span class="t-emoji">🌲</span>Forest</button>
+        <button class="theme-btn" data-theme="space" onclick="setTheme('space',this)"><span class="t-emoji">🚀</span>Space</button>
+        <button class="theme-btn" data-theme="ocean" onclick="setTheme('ocean',this)"><span class="t-emoji">🐚</span>Ocean</button>
+        <button class="theme-btn" data-theme="candy" onclick="setTheme('candy',this)"><span class="t-emoji">🍭</span>Candy</button>
+        <button class="theme-btn" data-theme="dino" onclick="setTheme('dino',this)"><span class="t-emoji">🦕</span>Dino</button>
+      </div>
+    </div>
+
+    <!-- Shape -->
+    <div class="card">
+      <div class="section-title">Shape</div>
+      <div class="shape-grid">
+        <button class="shape-btn active" data-shape="rect" onclick="setShape('rect',this)">
+          <div class="s-icon"></div>Square
+        </button>
+        <button class="shape-btn" data-shape="wide" onclick="setShape('wide',this)">
+          <div class="s-icon wide"></div>Wide
+        </button>
+        <button class="shape-btn" data-shape="tall" onclick="setShape('tall',this)">
+          <div class="s-icon tall"></div>Tall
+        </button>
+      </div>
+    </div>
+
+    <!-- Difficulty -->
+    <div class="card">
+      <div class="section-title">Difficulty</div>
+      <div class="slider-row">
+        <label>Size</label>
+        <input type="range" min="5" max="25" value="12" step="1" id="sizeRange"
+          oninput="document.getElementById('sizeVal').textContent=this.value;updateDots()">
+        <span class="val" id="sizeVal">12</span>
+      </div>
+      <div class="diff-dots" id="diffDots"></div>
+    </div>
+
+    <!-- Bulk count -->
+    <div class="card">
+      <div class="section-title">How many mazes?</div>
+      <div class="bulk-row">
+        <div class="bulk-stepper">
+          <button onclick="adjustBulk(-1)">−</button>
+          <input type="number" id="bulkInput" value="1" min="1" max="50" onchange="setBulkFromInput()">
+          <button onclick="adjustBulk(1)">+</button>
+        </div>
+      </div>
+      <div class="bulk-presets">
+        <button class="bulk-preset" onclick="setBulkDirect(1)">1</button>
+        <button class="bulk-preset" onclick="setBulkDirect(2)">2</button>
+        <button class="bulk-preset" onclick="setBulkDirect(4)">4</button>
+        <button class="bulk-preset" onclick="setBulkDirect(6)">6</button>
+        <button class="bulk-preset" onclick="setBulkDirect(10)">10</button>
+        <button class="bulk-preset" onclick="setBulkDirect(20)">20</button>
+        <button class="bulk-preset" onclick="setBulkDirect(50)">50</button>
+      </div>
+      <div class="bulk-hint" id="bulkHint">1 maze · single page</div>
+    </div>
+
+    <!-- Options -->
+    <div class="card">
+      <div class="section-title">Options</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div class="toggle-row">
+          <span>Show solution</span>
+          <label class="switch"><input type="checkbox" id="showSol" onchange="redrawCurrent()"><span class="knob"></span></label>
+        </div>
+        <div class="divider"></div>
+        <div class="toggle-row">
+          <span>Decorations</span>
+          <label class="switch"><input type="checkbox" id="showDeco" checked onchange="redrawAll()"><span class="knob"></span></label>
+        </div>
+        <div class="divider"></div>
+        <div class="toggle-row">
+          <span>Bold walls</span>
+          <label class="switch"><input type="checkbox" id="boldWalls" onchange="redrawAll()"><span class="knob"></span></label>
+        </div>
+        <div class="divider"></div>
+        <div class="toggle-row">
+          <span>Mixed difficulty</span>
+          <label class="switch"><input type="checkbox" id="mixedDiff" onchange="generateAll()"><span class="knob"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="card" style="gap:8px;display:flex;flex-direction:column;">
+      <button class="btn-generate" onclick="generateAll()" id="genBtn">
+        ✨ <span id="genLabel">New Maze</span>
+      </button>
+      <div class="actions-divider"></div>
+      <div class="actions-group-label">🖨️ Print</div>
+      <button class="btn-print" onclick="printCurrent()">🖨️ Print this maze</button>
+      <button class="btn-print-all" onclick="printAll()" id="printAllBtn" style="display:none">
+        📄 <span id="printAllLabel">Print all mazes</span>
+      </button>
+      <div class="actions-divider"></div>
+      <div class="actions-group-label">📥 Save as PDF</div>
+      <button class="btn-pdf" onclick="savePdfCurrent()" id="pdfOneBtn">📥 Save this maze as PDF</button>
+      <button class="btn-pdf-all" onclick="savePdfAll()" id="pdfAllBtn" style="display:none">
+        📦 <span id="pdfAllLabel">Save all mazes as PDF</span>
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- VIEWER -->
+  <section>
+    <div class="viewer-card">
+      <div class="viewer-top">
+        <div class="viewer-title" id="viewerTitle">🧩 Classic Maze</div>
+        <div class="viewer-actions">
+          <button class="icon-btn" title="Regenerate this maze" onclick="regenerateSingle()">↺</button>
+          <button class="icon-btn" title="Save as PDF" onclick="savePdfCurrent()">📥</button>
+          <button class="icon-btn" title="Print this maze" onclick="printCurrent()">🖨</button>
+        </div>
+      </div>
+
+      <div class="maze-nav" id="mazeNav" style="display:none">
+        <button class="nav-btn" id="prevBtn" onclick="navigate(-1)" disabled>← Prev</button>
+        <div class="page-pill" id="pageIndicator">1 / 1</div>
+        <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Next →</button>
+      </div>
+
+      <canvas id="mazeCanvas"></canvas>
+
+      <div class="thumb-strip" id="thumbStrip"></div>
+      <div class="badge-row" id="badgeRow"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-emojis">🧩 🌟 🦕 🚀 🍭 🌊</div>
+  <div>Made with love for curious kids everywhere &nbsp;·&nbsp; Print as many as you like, totally free!</div>
+  <div style="margin-top:8px;font-size:0.78rem;color:#a09ec0;">© 2026 Maze Maker · Made with ❤️ for kids, parents &amp; teachers · Free for personal and educational use</div>
+</footer>
+
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+const themes = {
+  classic: {
+    bg:'#ffffff', wall:'#1e1b4b', start:'#1db88a', end:'#f05a28',
+    sol:'rgba(124,111,247,0.4)', deco:['⭐','🔷','💠'], label:'Classic',
+    startChar:'🧒', endChar:'🏆', startBg:'#d4f5eb', endBg:'#fde8df',
+    startLabel:'START', endLabel:'FINISH'
+  },
+  forest: {
+    bg:'#f8fff4', wall:'#27500A', start:'#1db88a', end:'#f05a28',
+    sol:'rgba(29,184,138,0.4)', deco:['🌿','🍄','🌸'], label:'Forest',
+    startChar:'🐿️', endChar:'🏠', startBg:'#d4f5eb', endBg:'#fde8df',
+    startLabel:'START', endLabel:'HOME'
+  },
+  space: {
+    bg:'#04122a', wall:'#7ecbf5', start:'#5DCAA5', end:'#ED93B1',
+    sol:'rgba(55,138,221,0.4)', deco:['⭐','🌙','✨'], label:'Space',
+    startChar:'👨‍🚀', endChar:'🛸', startBg:'rgba(93,202,165,0.25)', endBg:'rgba(237,147,177,0.25)',
+    startLabel:'LAUNCH', endLabel:'UFO'
+  },
+  ocean: {
+    bg:'#f0f9ff', wall:'#0C447C', start:'#1db88a', end:'#D4537E',
+    sol:'rgba(23,133,221,0.4)', deco:['🐠','🐙','🦀'], label:'Ocean',
+    startChar:'🐬', endChar:'🏝️', startBg:'#d4f5eb', endBg:'#fde5f2',
+    startLabel:'SWIM', endLabel:'ISLAND'
+  },
+  candy: {
+    bg:'#fff5fa', wall:'#993556', start:'#1db88a', end:'#7F77DD',
+    sol:'rgba(212,83,126,0.4)', deco:['🍭','🍬','🌈'], label:'Candy',
+    startChar:'🧁', endChar:'🍫', startBg:'#d4f5eb', endBg:'#ede9ff',
+    startLabel:'START', endLabel:'TREAT'
+  },
+  dino: {
+    bg:'#f8fff4', wall:'#3B6D11', start:'#f05a28', end:'#534AB7',
+    sol:'rgba(99,153,34,0.4)', deco:['🦕','🦖','🌴'], label:'Dino',
+    startChar:'🥚', endChar:'🦖', startBg:'#fde8df', endBg:'#ede9ff',
+    startLabel:'HATCH', endLabel:'DINO'
+  }
+};
+
+let curTheme = 'classic', curShape = 'rect', bulkCount = 1, curPage = 0;
+let mazeData = [];
+
+// ── Bulk count helpers ──
+function getBulkCount() {
+  return parseInt(document.getElementById('bulkInput').value) || 1;
+}
+function setBulkDirect(n) {
+  n = Math.max(1, Math.min(50, n));
+  document.getElementById('bulkInput').value = n;
+  bulkCount = n;
+  updateBulkUI();
+  generateAll();
+}
+function adjustBulk(delta) {
+  const cur = getBulkCount();
+  setBulkDirect(cur + delta);
+}
+function setBulkFromInput() {
+  let n = getBulkCount();
+  n = Math.max(1, Math.min(50, n));
+  document.getElementById('bulkInput').value = n;
+  bulkCount = n;
+  updateBulkUI();
+  generateAll();
+}
+function updateBulkUI() {
+  const n = bulkCount;
+  document.getElementById('bulkHint').textContent = n === 1 ? '1 maze · single page' : `${n} mazes · ${n} pages to print`;
+  document.getElementById('genLabel').textContent = n === 1 ? 'New Maze' : `Generate ${n} Mazes`;
+  document.getElementById('printAllLabel').textContent = `Print all ${n} mazes`;
+  document.getElementById('printAllBtn').style.display = n > 1 ? 'flex' : 'none';
+  document.getElementById('pdfAllBtn').style.display = n > 1 ? 'flex' : 'none';
+  document.getElementById('pdfAllLabel').textContent = `Save all ${n} mazes as PDF`;
+}
+
+function setTheme(t, el) {
+  curTheme = t;
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('viewerTitle').textContent = '🧩 ' + themes[t].label + ' Maze';
+  generateAll();
+}
+function setShape(s, el) {
+  curShape = s;
+  document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  generateAll();
+}
+
+function getGridSize(base) {
+  base = base || parseInt(document.getElementById('sizeRange').value);
+  if (curShape === 'wide') return { cols: Math.round(base * 1.6), rows: base };
+  if (curShape === 'tall') return { cols: base, rows: Math.round(base * 1.6) };
+  return { cols: base, rows: base };
+}
+function getDiffSize(i, total) {
+  const base = parseInt(document.getElementById('sizeRange').value);
+  if (!document.getElementById('mixedDiff').checked || total <= 1) return base;
+  const offsets = [-4, 0, 4, -2, 2, -3, 3, 1, -1, 5, -5, 2, -1, 3, -2, 4, 0, -3, 1, -4,
+                   5, -2, 3, -5, 1, 0, 4, -1, 2, -3, -4, 5, 0, 3, -2, 1, -1, 4, 2, -3,
+                   0, 5, -4, 2, 1, -2, 3, -1, 4, -5];
+  return Math.max(5, Math.min(25, base + offsets[i % offsets.length]));
+}
+
+function buildMaze(c, r) {
+  const cells = Array.from({length:r}, () => Array.from({length:c}, () => ({n:true,s:true,e:true,w:true,visited:false})));
+  const stack = [];
+  cells[0][0].visited = true; stack.push({x:0,y:0});
+  while (stack.length) {
+    const cur = stack[stack.length-1]; const nbrs = [];
+    if (cur.y>0   && !cells[cur.y-1][cur.x].visited) nbrs.push({x:cur.x,  y:cur.y-1, d:'n'});
+    if (cur.y<r-1 && !cells[cur.y+1][cur.x].visited) nbrs.push({x:cur.x,  y:cur.y+1, d:'s'});
+    if (cur.x<c-1 && !cells[cur.y][cur.x+1].visited) nbrs.push({x:cur.x+1,y:cur.y,   d:'e'});
+    if (cur.x>0   && !cells[cur.y][cur.x-1].visited) nbrs.push({x:cur.x-1,y:cur.y,   d:'w'});
+    if (nbrs.length) {
+      const nb = nbrs[Math.floor(Math.random()*nbrs.length)];
+      if(nb.d==='n'){cells[cur.y][cur.x].n=false;cells[nb.y][nb.x].s=false;}
+      if(nb.d==='s'){cells[cur.y][cur.x].s=false;cells[nb.y][nb.x].n=false;}
+      if(nb.d==='e'){cells[cur.y][cur.x].e=false;cells[nb.y][nb.x].w=false;}
+      if(nb.d==='w'){cells[cur.y][cur.x].w=false;cells[nb.y][nb.x].e=false;}
+      cells[nb.y][nb.x].visited = true; stack.push({x:nb.x,y:nb.y});
+    } else stack.pop();
+  }
+  return cells;
+}
+
+function solveMaze(cells, c, r) {
+  const visited = Array.from({length:r}, () => new Array(c).fill(false));
+  const parent  = Array.from({length:r}, () => new Array(c).fill(null));
+  const queue = [{x:0,y:0}]; visited[0][0] = true;
+  while (queue.length) {
+    const cur = queue.shift();
+    if (cur.x===c-1 && cur.y===r-1) {
+      const path=[]; let n=cur; while(n){path.push(n);n=parent[n.y][n.x];} return path.reverse();
+    }
+    const {x,y}=cur; const moves=[];
+    if(!cells[y][x].n&&y>0  &&!visited[y-1][x]) moves.push({x,y:y-1});
+    if(!cells[y][x].s&&y<r-1&&!visited[y+1][x]) moves.push({x,y:y+1});
+    if(!cells[y][x].e&&x<c-1&&!visited[y][x+1]) moves.push({x:x+1,y});
+    if(!cells[y][x].w&&x>0  &&!visited[y][x-1]) moves.push({x:x-1,y});
+    for (const m of moves) { visited[m.y][m.x]=true; parent[m.y][m.x]=cur; queue.push(m); }
+  }
+  return [];
+}
+
+function renderToCanvas(canvas, entry, showSolOverride) {
+  const theme = themes[curTheme];
+  const {maze, solution, cols, rows} = entry;
+  const vw = Math.min(canvas.parentElement ? canvas.parentElement.clientWidth - 48 : 580, 580);
+  const maxH = 540;
+  const cell = Math.min(Math.floor(vw/cols), Math.floor(maxH/rows), 38);
+  canvas.width  = cols * cell;
+  canvas.height = rows * cell;
+  const ctx = canvas.getContext('2d');
+  const bold = document.getElementById('boldWalls').checked;
+  const showSol  = showSolOverride !== undefined ? showSolOverride : document.getElementById('showSol').checked;
+  const showDeco = document.getElementById('showDeco').checked;
+
+  ctx.fillStyle = theme.bg; ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  if (showSol && solution.length) {
+    ctx.strokeStyle = theme.sol; ctx.lineWidth = cell*0.42; ctx.lineCap='round'; ctx.lineJoin='round';
+    ctx.beginPath();
+    solution.forEach((p,i) => {
+      const px=p.x*cell+cell/2, py=p.y*cell+cell/2;
+      i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
+    });
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle = theme.wall; ctx.lineWidth = bold ? 2.8 : 1.6; ctx.lineCap='square';
+  for (let y=0; y<rows; y++) {
+    for (let x=0; x<cols; x++) {
+      const c=maze[y][x]; const px=x*cell, py=y*cell;
+      ctx.beginPath();
+      if(c.n){ctx.moveTo(px,py);ctx.lineTo(px+cell,py);}
+      if(c.s){ctx.moveTo(px,py+cell);ctx.lineTo(px+cell,py+cell);}
+      if(c.w){ctx.moveTo(px,py);ctx.lineTo(px,py+cell);}
+      if(c.e){ctx.moveTo(px+cell,py);ctx.lineTo(px+cell,py+cell);}
+      ctx.stroke();
+    }
+  }
+
+  // ── Draw themed start/end characters ──
+  function drawCharCell(cx, cy, emoji, bgColor, borderColor, labelText) {
+    const r = cell * 0.44;
+    const fontSize = Math.max(Math.min(cell * 0.62, 26), 10);
+    const labelSize = Math.max(Math.min(cell * 0.22, 9), 6);
+
+    // Soft glow halo
+    const grd = ctx.createRadialGradient(cx, cy, r*0.1, cx, cy, r*1.5);
+    grd.addColorStop(0, bgColor);
+    grd.addColorStop(1, 'transparent');
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.arc(cx, cy, r*1.5, 0, Math.PI*2); ctx.fill();
+
+    // Circle background
+    ctx.fillStyle = bgColor;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+
+    // Circle border
+    ctx.strokeStyle = borderColor;
+    ctx.lineWidth = Math.max(cell * 0.08, 1.2);
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
+
+    // Emoji character
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = `${fontSize}px serif`;
+    ctx.fillText(emoji, cx, cy);
+
+    // Label badge below (only if cell big enough)
+    if (cell >= 20 && labelText) {
+      const bw = labelSize * labelText.length * 0.72 + 6;
+      const bh = labelSize + 4;
+      const bx = cx - bw/2;
+      const by = cy + r + 2;
+      ctx.fillStyle = borderColor;
+      ctx.beginPath();
+      ctx.roundRect(bx, by, bw, bh, 3);
+      ctx.fill();
+      ctx.fillStyle = 'white';
+      ctx.font = `bold ${labelSize}px sans-serif`;
+      ctx.textBaseline = 'middle';
+      ctx.fillText(labelText, cx, by + bh/2);
+    }
+  }
+
+  drawCharCell(cell/2, cell/2,
+    theme.startChar, theme.startBg, theme.start, theme.startLabel);
+  drawCharCell((cols-0.5)*cell, (rows-0.5)*cell,
+    theme.endChar, theme.endBg, theme.end, theme.endLabel);
+
+  if (showDeco && cell >= 15) {
+    const decos = theme.deco;
+    const count = Math.min(Math.floor(cols*rows*0.04)+2, 7);
+    const placed = new Set(['0,0',`${cols-1},${rows-1}`]);
+    ctx.font=`${Math.min(cell*0.52,18)}px serif`;
+    let tries=0;
+    while (placed.size < count+2 && tries < 300) {
+      tries++;
+      const dx=Math.floor(Math.random()*cols), dy=Math.floor(Math.random()*rows);
+      const key=`${dx},${dy}`;
+      if (!placed.has(key)) { placed.add(key); ctx.fillText(decos[Math.floor(Math.random()*decos.length)], dx*cell+cell/2, dy*cell+cell/2); }
+    }
+  }
+
+  ctx.strokeStyle = theme.wall; ctx.lineWidth = bold ? 2.8 : 1.6;
+  ctx.beginPath();
+  ctx.moveTo(0,0);ctx.lineTo(canvas.width,0);
+  ctx.moveTo(0,0);ctx.lineTo(0,canvas.height);
+  ctx.moveTo(canvas.width,0);ctx.lineTo(canvas.width,canvas.height);
+  ctx.moveTo(0,canvas.height);ctx.lineTo(canvas.width,canvas.height);
+  ctx.stroke();
+
+  ctx.strokeStyle = theme.bg; ctx.lineWidth = cell*0.9;
+  ctx.beginPath(); ctx.moveTo(0,cell*0.5);ctx.lineTo(1,cell*0.5); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(canvas.width,(rows-0.5)*cell);ctx.lineTo(canvas.width-1,(rows-0.5)*cell); ctx.stroke();
+}
+
+// ── Progress helpers ──
+function showProgress(title) {
+  document.getElementById('progressTitle').textContent = title;
+  document.getElementById('progressBar').style.width = '0%';
+  document.getElementById('progressText').textContent = 'Starting…';
+  document.getElementById('progressOverlay').classList.add('show');
+}
+function updateProgress(done, total, label) {
+  const pct = Math.round((done/total)*100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = label || `${done} of ${total} done`;
+}
+function hideProgress() {
+  document.getElementById('progressOverlay').classList.remove('show');
+}
+
+// ── Generate all mazes (chunked to keep UI alive) ──
+async function generateAll() {
+  bulkCount = getBulkCount();
+  mazeData = []; curPage = 0;
+
+  if (bulkCount > 5) showProgress(`✨ Generating ${bulkCount} Mazes…`);
+
+  for (let i=0; i<bulkCount; i++) {
+    const sz = getGridSize(getDiffSize(i, bulkCount));
+    const maze = buildMaze(sz.cols, sz.rows);
+    const solution = solveMaze(maze, sz.cols, sz.rows);
+    mazeData.push({maze, solution, cols:sz.cols, rows:sz.rows, diffSize:getDiffSize(i,bulkCount)});
+
+    if (bulkCount > 5 && i % 5 === 4) {
+      updateProgress(i+1, bulkCount, `Generated ${i+1} of ${bulkCount} mazes…`);
+      await new Promise(r => setTimeout(r, 0));
+    }
+  }
+
+  if (bulkCount > 5) hideProgress();
+  updateBulkUI();
+  renderPage();
+  buildThumbs();
+  updateBadges();
+  updateNav();
+}
+
+function regenerateSingle() {
+  const entry = mazeData[curPage];
+  const sz = getGridSize(entry.diffSize);
+  const maze = buildMaze(sz.cols, sz.rows);
+  const solution = solveMaze(maze, sz.cols, sz.rows);
+  mazeData[curPage] = {maze, solution, cols:sz.cols, rows:sz.rows, diffSize:entry.diffSize};
+  renderPage(); updateThumbs(); updateBadges();
+}
+
+function renderPage() {
+  if (!mazeData.length) return;
+  renderToCanvas(document.getElementById('mazeCanvas'), mazeData[curPage]);
+}
+function redrawCurrent() { renderPage(); }
+function redrawAll() { renderPage(); buildThumbs(); }
+
+function buildThumbs() {
+  const strip = document.getElementById('thumbStrip');
+  strip.innerHTML = '';
+  if (bulkCount <= 1) { strip.style.display='none'; return; }
+  strip.style.display='flex';
+  mazeData.forEach((entry, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'thumb-wrap' + (i===curPage?' active-thumb':'');
+    wrap.onclick = () => { curPage=i; renderPage(); updateThumbs(); updateNav(); updateBadges(); };
+    const tc = document.createElement('canvas');
+    tc.className = 'thumb-canvas';
+    const {cols,rows} = entry;
+    const cell = Math.min(Math.floor(64/cols), Math.floor(54/rows), 9);
+    tc.width=cols*cell; tc.height=rows*cell;
+    renderToCanvas(tc, entry, false);
+    const lbl = document.createElement('div');
+    lbl.className='thumb-label'; lbl.textContent=`#${i+1}`;
+    wrap.appendChild(tc); wrap.appendChild(lbl);
+    strip.appendChild(wrap);
+  });
+}
+
+function updateThumbs() {
+  document.querySelectorAll('.thumb-wrap').forEach((el,i) => el.classList.toggle('active-thumb', i===curPage));
+}
+
+function navigate(dir) {
+  curPage = Math.max(0, Math.min(mazeData.length-1, curPage+dir));
+  renderPage(); updateThumbs(); updateNav(); updateBadges();
+}
+
+function updateNav() {
+  const nav = document.getElementById('mazeNav');
+  nav.style.display = bulkCount>1 ? 'flex' : 'none';
+  document.getElementById('prevBtn').disabled = curPage===0;
+  document.getElementById('nextBtn').disabled = curPage===mazeData.length-1;
+  document.getElementById('pageIndicator').textContent = `${curPage+1} / ${mazeData.length}`;
+}
+
+function updateDots() {
+  const sz = parseInt(document.getElementById('sizeRange').value);
+  const lvl = sz<=10?1:sz<=17?2:3;
+  const labels = ['','Easy','Medium','Hard'];
+  document.getElementById('diffDots').innerHTML =
+    Array.from({length:3},(_,i)=>`<div class="diff-dot${i<lvl?' on':''}"></div>`).join('')+
+    `<span class="diff-label">${labels[lvl]}</span>`;
+}
+
+function updateBadges() {
+  if (!mazeData.length) return;
+  const entry = mazeData[curPage];
+  const sz = entry.diffSize;
+  const diff = sz<=10?'Easy':sz<=17?'Medium':'Hard';
+  const diffCls = sz<=10?'diff-badge-easy':sz<=17?'diff-badge-medium':'diff-badge-hard';
+  const mixed = document.getElementById('mixedDiff').checked && bulkCount>1;
+  document.getElementById('badgeRow').innerHTML =
+    `<span class="badge theme-badge">${themes[curTheme].label}</span>` +
+    `<span class="badge">${entry.cols}×${entry.rows} grid</span>` +
+    `<span class="badge ${diffCls}">${diff}</span>` +
+    `<span class="badge">${entry.solution.length} steps</span>` +
+    (mixed?`<span class="badge mixed-badge">mixed</span>`:'');
+}
+
+// ── Print ──
+function buildPrintHtml(pages) {
+  const theme = themes[curTheme];
+  const pageHtml = pages.map(p => `
+    <div class="page">
+      <div class="ph">
+        <div><h2>${theme.label} Maze${pages.length>1?' #'+p.num:''}</h2><p>Find your way from Start to End!</p></div>
+        <div class="pills"><span class="pill">${p.cols}×${p.rows}</span><span class="pill">${p.diff}</span></div>
+      </div>
+      <div class="legend">
+        <span><span class="dot" style="background:${theme.start}"></span>${theme.startChar} ${theme.startLabel} (top-left)</span>
+        <span><span class="dot" style="background:${theme.end}"></span>${theme.endChar} ${theme.endLabel} (bottom-right)</span>
+      </div>
+      <img src="${p.canvas.toDataURL()}" class="maze-img">
+      <div class="names">
+        <div>Name: ________________________________</div>
+        <div>Date: ________________</div>
+      </div>
+      <div class="copyright">© 2026 Maze Maker · Made with ❤️ for kids, parents &amp; teachers · Free for personal and educational use</div>
+    </div>`).join('');
+  return `<!DOCTYPE html><html><head><title>Mazes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&family=Fredoka+One&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Nunito',sans-serif;background:white;padding:20px}
+    .page{max-width:700px;margin:0 auto 50px;display:flex;flex-direction:column;align-items:center;gap:12px}
+    @media print{.page{page-break-after:always;margin:0 auto;padding:10px}}
+    .ph{width:100%;display:flex;justify-content:space-between;align-items:flex-start}
+    h2{font-family:'Fredoka One',cursive;font-size:22px;color:#1e1b4b}
+    p{font-size:13px;color:#6b6998;margin-top:2px;font-weight:600}
+    .pills{display:flex;gap:8px}
+    .pill{background:#f4f2ff;padding:4px 12px;border-radius:999px;font-size:12px;color:#5a54c4;font-weight:700;border:1.5px solid #c4baff}
+    .legend{display:flex;gap:20px;font-size:13px;color:#444;font-weight:600}
+    .dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:middle}
+    .maze-img{max-width:100%;border:2px solid #e2deff;border-radius:10px}
+    .names{display:flex;gap:40px;font-size:13px;color:#888;width:100%;font-weight:600}
+    .copyright{font-size:11px;color:#b0aed0;text-align:center;margin-top:8px;}
+  </style></head><body>${pageHtml}
+  <script>window.onload=function(){window.print();}<\/script></body></html>`;
+}
+
+function printCurrent() {
+  const canvas = document.getElementById('mazeCanvas');
+  const entry = mazeData[curPage];
+  const diff = entry.diffSize<=10?'Easy':entry.diffSize<=17?'Medium':'Hard';
+  const win = window.open('','_blank');
+  if (!win) { alert('Please allow popups to print.'); return; }
+  win.document.write(buildPrintHtml([{canvas,diff,num:curPage+1,cols:entry.cols,rows:entry.rows}]));
+  win.document.close();
+}
+
+function printAll() {
+  const pages = mazeData.map((entry,i) => {
+    const tc = document.createElement('canvas');
+    renderToCanvas(tc, entry, false);
+    return {canvas:tc, diff:entry.diffSize<=10?'Easy':entry.diffSize<=17?'Medium':'Hard', num:i+1, cols:entry.cols, rows:entry.rows};
+  });
+  const win = window.open('','_blank');
+  if (!win) { alert('Please allow popups to print.'); return; }
+  win.document.write(buildPrintHtml(pages));
+  win.document.close();
+}
+
+// ── PDF helpers ──
+function hexToRgb(hex) {
+  const clean = hex.replace('#','');
+  return [parseInt(clean.slice(0,2),16), parseInt(clean.slice(2,4),16), parseInt(clean.slice(4,6),16)];
+}
+
+function setPdfBtnLoading(btnId, loading, defaultHtml) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.innerHTML = loading ? `<span class="pdf-spinner"></span> Generating PDF…` : defaultHtml;
+}
+
+async function buildPdfPages(entries, onProgress) {
+  if (!window.jspdf) throw new Error('jsPDF not loaded yet. Please wait a moment and try again.');
+  const { jsPDF } = window.jspdf;
+  const theme = themes[curTheme];
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const pageW = 210, pageH = 297, margin = 14;
+  const usableW = pageW - margin * 2;
+
+  for (let i = 0; i < entries.length; i++) {
+    if (i > 0) doc.addPage();
+    const entry = entries[i];
+    const diff = entry.diffSize <= 10 ? 'Easy' : entry.diffSize <= 17 ? 'Medium' : 'Hard';
+
+    // Title
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20);
+    doc.setTextColor(30, 27, 75);
+    doc.text(`${theme.label} Maze${entries.length > 1 ? ' #'+(i+1) : ''}`, pageW/2, margin+6, {align:'center'});
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(107, 105, 152);
+    doc.text('Find your way from Start to End!', pageW/2, margin+12, {align:'center'});
+
+    // Pills
+    const pillY = margin + 18;
+    let pillX = pageW/2 - 22;
+    [`${entry.cols}×${entry.rows}`, diff].forEach(txt => {
+      doc.setFillColor(237, 233, 255);
+      doc.setDrawColor(196, 186, 255);
+      doc.roundedRect(pillX, pillY-4, 20, 7, 3, 3, 'FD');
+      doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(90,84,196);
+      doc.text(txt, pillX+10, pillY+0.5, {align:'center'});
+      pillX += 24;
+    });
+
+    // Legend
+    const legY = pillY + 11;
+    doc.setFontSize(9); doc.setFont('helvetica','bold');
+    doc.setFillColor(29, 184, 138);
+    doc.circle(margin+3, legY-1.5, 2, 'F');
+    doc.setTextColor(30,27,75);
+    doc.text(`${theme.startChar} ${theme.startLabel} — top-left corner`, margin+7, legY);
+
+    const [er,eg,eb] = hexToRgb(theme.end);
+    doc.setFillColor(er,eg,eb);
+    doc.circle(margin+80, legY-1.5, 2, 'F');
+    doc.text(`${theme.endChar} ${theme.endLabel} — bottom-right corner`, margin+84, legY);
+
+    // Maze image — render at high res
+    const mazeImgY = legY + 5;
+    const tc = document.createElement('canvas');
+    const cellPx = Math.min(Math.floor((usableW * 3.78) / entry.cols), Math.floor((usableW * 3.78) / entry.rows), 40);
+    tc.width  = entry.cols * cellPx;
+    tc.height = entry.rows * cellPx;
+    renderToCanvas(tc, entry, false);
+
+    const imgData = tc.toDataURL('image/png');
+    const aspect  = tc.height / tc.width;
+    const imgW = usableW;
+    const imgH = imgW * aspect;
+    doc.addImage(imgData, 'PNG', margin, mazeImgY, imgW, imgH);
+
+    // Maze border
+    doc.setDrawColor(226, 222, 255); doc.setLineWidth(0.4);
+    doc.roundedRect(margin, mazeImgY, imgW, imgH, 2, 2, 'S');
+
+    // Name / Date
+    const nameY = mazeImgY + imgH + 10;
+    doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(107,105,152);
+    doc.text('Name: ', margin, nameY);
+    doc.setDrawColor(200,195,240); doc.setLineWidth(0.3);
+    doc.line(margin+14, nameY+0.5, margin+80, nameY+0.5);
+    doc.text('Date: ', margin+90, nameY);
+    doc.line(margin+102, nameY+0.5, margin+140, nameY+0.5);
+
+    // Footer
+    doc.setFontSize(8); doc.setTextColor(180,175,220);
+    doc.text('© 2026 Maze Maker · Made with ❤️ for kids, parents & teachers · Free for personal and educational use', pageW/2, pageH-8, {align:'center'});
+
+    // Yield to UI thread every 5 pages
+    if (onProgress) onProgress(i+1, entries.length);
+    if (i % 5 === 4) await new Promise(r => setTimeout(r, 0));
+  }
+
+  return doc;
+}
+
+async function savePdfCurrent() {
+  setPdfBtnLoading('pdfOneBtn', true);
+  await new Promise(r => setTimeout(r, 30));
+  try {
+    const entry = mazeData[curPage];
+    const doc = await buildPdfPages([entry]);
+    const label = themes[curTheme].label.toLowerCase();
+    doc.save(`maze-${label}-${entry.cols}x${entry.rows}.pdf`);
+  } catch(e) {
+    alert('PDF error: ' + e.message);
+    console.error(e);
+  }
+  setPdfBtnLoading('pdfOneBtn', false, '📥 Save this maze as PDF');
+}
+
+async function savePdfAll() {
+  const n = mazeData.length;
+  setPdfBtnLoading('pdfAllBtn', true);
+  showProgress(`📥 Building PDF (${n} pages)…`);
+  await new Promise(r => setTimeout(r, 30));
+  try {
+    const doc = await buildPdfPages(mazeData, (done, total) => {
+      updateProgress(done, total, `Page ${done} of ${total}…`);
+    });
+    const label = themes[curTheme].label.toLowerCase();
+    doc.save(`mazes-${label}-x${n}.pdf`);
+  } catch(e) {
+    alert('PDF error: ' + e.message);
+    console.error(e);
+  }
+  hideProgress();
+  setPdfBtnLoading('pdfAllBtn', false, `📦 <span id="pdfAllLabel">Save all ${n} mazes as PDF</span>`);
+}
+
+// ── Init ──
+document.getElementById('sizeRange').addEventListener('input', () => { updateDots(); generateAll(); });
+updateDots();
+generateAll();
+</script>
+</body>
+</html>
